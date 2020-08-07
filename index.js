@@ -1,30 +1,11 @@
 console.log(15);
 
 /* 
+**  Вимоги
 **  блоки виставляються в поле в рандомному порядку
 **  блок може рухатись якщо є вільне місце
 **  блок може штовхати інші блоки, група блоків може рухатись якщо є місце
 */
-
-// function allowDrop(event) {
-//   console.log("allowDrop");
-//   event.preventDefault();
-// }
-
-// function drop(event) {
-//   console.log("Drop", event);
-//   event.preventDefault();
-//   var data = event.dataTransfer.getData("Text");
-//   console.log("data = ", data);
-
-//   event.target.appendChild(document.getElementById(data));
-// }
-
-// function dragStart(event) {
-//   console.log("dragStart", event);
-//   event.dataTransfer.setData("Text", event.target.id);
-// }
-
 
 
 const gameArea = document.querySelector(".game-area");
