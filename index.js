@@ -10,14 +10,15 @@ console.log(15);
 
 const gameArea = document.querySelector(".game-area");
 const test = document.querySelector(".win");
+const cellArr = [];
+
 
 const fill = (root) => {
   let fragment = document.createDocumentFragment();
   
-  const createEl = (col, row) => {
+  const createEl = (col, row, num) => {
     const cell = document.createElement("div");
-    const num = row * 4 - 4 + col;
-    // console.log("col = ",  col, " row = ", row, " num = ", num);
+    
     
     cell.classList = "cell";
     cell.setAttribute("id", num );
@@ -28,6 +29,7 @@ const fill = (root) => {
         span.innerText = num;
 
     cell.appendChild(span);
+    cell.addEventListener('click', cellMove);
     
     return cell;
   }
@@ -37,7 +39,10 @@ const fill = (root) => {
       if (col === 4 && row === 4 ) { 
         break;
       } else {
-        fragment.appendChild( createEl(col, row) );
+        const num = row * 4 - 4 + col;
+        console.log("col = ", col, " row = ", row, " num = ", num);
+        fragment.appendChild( createEl(col, row, num) );
+        cellArr.push([row, col]);
       }
     }
   }
@@ -45,5 +50,21 @@ const fill = (root) => {
   root.appendChild(fragment);
 }
 
-fill(gameArea);
+const cellMove = (event) => {
+  console.log("event", event);
+  // let curentRow = cellArr[cell.id][0];
+  // let curentCol = cellArr[cell.id][1];
+};
 
+const empty = {
+  row: 4,
+  col: 4
+}
+
+// _ _ _ _[]
+// _ _ _ _
+// empty id = 16
+
+
+fill(gameArea);
+console.log("cellArr = ", cellArr);
