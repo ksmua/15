@@ -12,6 +12,7 @@
 .game-area {
 	width: 400px;
 	height: 400px;
+	margin-top: 50px;
 	/* background-color: grey; */
 	background-color: #708070;
 	border-radius: 5px;

@@ -12,7 +12,7 @@ const gameArea = document.querySelector(".game-area");
 const winField = document.querySelector(".win");
 const cellArr = [];
 const empty = { row: 4, col: 4 } // position of empty field
-const mixBtn = document.querySelector('#mixbtn');
+const mixBtn = document.getElementById('mixbtn');
 let mixed = false;
 
 const winComb = {
@@ -88,6 +88,12 @@ const fill = (root) => {
   root.appendChild(fragment);
 }
 
+const isWin = () => {
+  if ( checkWin(cellArr, winComb) && mixed ) {
+    winField.innerText = "ОК !!!";
+  };
+}
+
 /* return true if curent cell is neighbor with empty field */
 const canMove = (row, col) => {
   return (
@@ -98,6 +104,25 @@ const canMove = (row, col) => {
 
 /* Set top or left property of cell to move it in empty position*/
 const setPosition = (pos) =>  pos * 100 - 100 + "px"; 
+
+const moveNeighborCell = (targetRow, targetCol) => {
+  const index = cellArr.findIndex((el) => el[0] === targetRow && el[1] === targetCol);
+
+  const currentCell = document.getElementById(index + 1);
+
+  emptyPositionRow = empty.row;  // -> change to object emptyPosition{row: empty.row;, col: empty.col}
+  emptyPositionCol = empty.col;
+
+  cellArr[index][0] = emptyPositionRow; // -> emptyPosition.row
+  cellArr[index][1] = emptyPositionCol;
+
+  currentCell.style.top = setPosition(empty.row);
+  currentCell.style.left = setPosition(empty.col);
+
+  empty.row = targetRow;
+  empty.col = targetCol;
+}
+
 
 const cellMove = (event) => {
   const currentCell = event.target.parentNode;
@@ -119,16 +144,16 @@ const cellMove = (event) => {
     empty.col = curentCol;
   }
 
-  if ( checkWin(cellArr, winComb) && mixed ) {
-    winField.innerText = "ОК !!!";
-  };
+  isWin();
 };
+
+
 
 const rotate = () => {
   let targetRow = empty.row;
   let targetCol = empty.col;
 
-  //select direction to move
+  //select random direction to move
   if (Math.random() > 0.5){ 
     // 2 / 3 / 4
     if (targetRow < 4 && targetRow > 1) {
@@ -147,76 +172,45 @@ const rotate = () => {
       targetCol -= 1;
     } 
   }
-  // console.log("new target > ", targetRow, targetCol,); 
-
-  // const select = (a, b) => {
-  //   if (Math.random() > 0.5){
-  //     b = false;
-  //   } else {
-  //     a = false; 
-  //   }
-  // }
-
-  // const selectDirection = (up, down, left, right) => {
-  //   console.log("up, down, left, right", up, down, left, right);
-  //   up ? targetRow -= 1 : null;
-  //   down ? targetRow += 1 : null;
-  //   left ? targetCol -= 1 : null;
-  //   right ? targetCol += 1 : null;
-  // }
-
-
-  // // Empty in the central square
-  // if (canMoveUp && canMoveDown && canMoveLeft && canMoveRight){
-  //   select(select(canMoveUp, canMoveDown),select(canMoveLeft, canMoveRight) );
-  //   console.log("selected move > ", canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  //   selectDirection(canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  // }
-  // // Empty in the vertical side
-  // if (canMoveUp && canMoveDown) {
-  //   select( select(canMoveUp, canMoveDown), canMoveLeft ? canMoveLeft : canMoveRight );
-  //   console.log("selected move > ", canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  //   selectDirection(canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  // }
-  // // Empty in the horisontal side
-  // if (canMoveLeft && canMoveRight) {
-  //   select(select(canMoveLeft, canMoveRight), canMoveUp ? canMoveUp : canMoveDown);
-  //   console.log("selected move > ", canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  //   selectDirection(canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  // }
-  // // Empty in the corner
-  // if (canMoveLeft || canMoveRight ) {
-  //   select(select(canMoveLeft, canMoveRight), canMoveUp ? canMoveUp : canMoveDown);
-  //   console.log("selected move > ", canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  //   selectDirection(canMoveUp, canMoveDown, canMoveLeft, canMoveRight);
-  // }
- 
-  // console.log("targetRow, targetCol", targetRow, " ", targetCol);
-
-  const exchangeNeighborCell = (targetRow, targetCol) =>{
-    const index = cellArr.findIndex( (el) => el[0] === targetRow && el[1] === targetCol );
-   
-    const currentCell = document.getElementById(index + 1);
-
-    emptyPositionRow = empty.row;  // -> change to object emptyPosition{row: empty.row;, col: empty.col}
-    emptyPositionCol = empty.col;
-    
-    cellArr[index][0] = emptyPositionRow; // -> emptyPosition.row
-    cellArr[index][1] = emptyPositionCol;
-
-    currentCell.style.top  = setPosition(empty.row);
-    currentCell.style.left = setPosition(empty.col);
-
-    empty.row = targetRow;
-    empty.col = targetCol;
-  }
-
-  exchangeNeighborCell(targetRow, targetCol);
+  
+  moveNeighborCell(targetRow, targetCol);
 }
 
 
+// let event = new Event("click" {bubbles: true});
+// cell.dispatchEvent(event);
+const keyMove = (event) => {
+  // console.log(event.code);
+  if ( event.code == "ArrowUp" && empty.row < 4 ){
+    // console.log("ArrowUp");
+    const targetRow = empty.row + 1;
+    const targetCol = empty.col;
+    moveNeighborCell(targetRow, targetCol);
+  }
+  if ( event.code == "ArrowDown" && empty.row > 1 ){
+    // console.log("ArrowDown");
+    const targetRow = empty.row - 1 ;
+    const targetCol = empty.col;
+    moveNeighborCell(targetRow, targetCol);
+  }
+  if ( event.code == "ArrowLeft" && empty.col < 4 ){
+    // console.log("ArrowLeft");
+    const targetRow = empty.row;
+    const targetCol = empty.col + 1;
+    moveNeighborCell(targetRow, targetCol);
+  }
+  if (event.code == "ArrowRight" && empty.col > 1){
+    // console.log("ArrowRight");
+    const targetRow = empty.row;
+    const targetCol = empty.col - 1;
+    moveNeighborCell(targetRow, targetCol);
+  }
 
-fill(gameArea);
+  isWin();
+}
+
+
+document.body.addEventListener("keydown", keyMove);
 
 mixBtn.addEventListener("click", () => {
   for (let i = 0; i <= 200; i++) {
@@ -225,3 +219,5 @@ mixBtn.addEventListener("click", () => {
   winField.innerText = '';
   mixed = true;
 });
+
+fill(gameArea);
