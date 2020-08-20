@@ -3,9 +3,9 @@
 **  (+) блок може рухатись якщо є вільне місце
 **  (+) блоки виставляються в поле в рандомному порядку
 **  (+) після кожного ходу перевіряти комбініціяю на збіг із виграшною
+**  (+) можна рухати блоки кнопками клавіатури
 **  (опція) блок може штовхати інші блоки, група блоків може рухатись якщо є місце
 **  (опція) можна задавати розмір поля в пікселях кратний 100
-**  (-) можна рухати блоки кнопками клавіатури
 */
 
 const gameArea = document.querySelector(".game-area");
@@ -29,26 +29,30 @@ const winComb = {
   ]
 }
 
-const checkWin = (cellArr, winComb) => {
-  const { horisontal, vertical } = winComb;
-  
-  const check = (cellArr, winArr) => {
+
+
+const isWin = () => {
+  const checkCombination = (cellArr, winArr) => {
     let winflag = true;
-    
+
     for (let i = 0; i < cellArr.length; i++) {
-      if ( !(cellArr[i][0] == winArr[i][0] &&
-             cellArr[i][1] == winArr[i][1]) ){
+      if (!(cellArr[i][0] == winArr[i][0] &&
+        cellArr[i][1] == winArr[i][1])) {
         winflag = false;
         break;
       }
     }
     // console.log("winflag", winflag);
     return winflag;
-  }
+  } 
 
-  return ( check(cellArr, horisontal) || 
-           check(cellArr, vertical) ) ? true : false;
-} 
+  const { horisontal, vertical } = winComb;
+
+  if ( mixed && ( checkCombination(cellArr, horisontal) || 
+                  checkCombination(cellArr, vertical) ) ) {
+    winField.innerText = "ОК !!!";
+  };
+}
 
 const createEl = (col, row, num) => {
   const cell = document.createElement("div");
@@ -86,12 +90,6 @@ const fill = (root) => {
   }
 
   root.appendChild(fragment);
-}
-
-const isWin = () => {
-  if ( checkWin(cellArr, winComb) && mixed ) {
-    winField.innerText = "ОК !!!";
-  };
 }
 
 /* return true if curent cell is neighbor with empty field */
@@ -148,8 +146,7 @@ const cellMove = (event) => {
 };
 
 
-
-const rotate = () => {
+const mixCells = () => {
   let targetRow = empty.row;
   let targetCol = empty.col;
 
@@ -177,33 +174,22 @@ const rotate = () => {
 }
 
 
-// let event = new Event("click" {bubbles: true});
-// cell.dispatchEvent(event);
+// let myEvent = new Event("click" {bubbles: true});
+// cell.dispatchEvent(myEvent);
 const keyMove = (event) => {
   // console.log(event.code);
   if ( event.code == "ArrowUp" && empty.row < 4 ){
     // console.log("ArrowUp");
-    const targetRow = empty.row + 1;
-    const targetCol = empty.col;
-    moveNeighborCell(targetRow, targetCol);
-  }
-  if ( event.code == "ArrowDown" && empty.row > 1 ){
+    moveNeighborCell(empty.row + 1, empty.col);
+  } else if ( event.code == "ArrowDown" && empty.row > 1 ){
     // console.log("ArrowDown");
-    const targetRow = empty.row - 1 ;
-    const targetCol = empty.col;
-    moveNeighborCell(targetRow, targetCol);
-  }
-  if ( event.code == "ArrowLeft" && empty.col < 4 ){
+    moveNeighborCell(empty.row - 1, empty.col);
+  } else if ( event.code == "ArrowLeft" && empty.col < 4 ){
     // console.log("ArrowLeft");
-    const targetRow = empty.row;
-    const targetCol = empty.col + 1;
-    moveNeighborCell(targetRow, targetCol);
-  }
-  if (event.code == "ArrowRight" && empty.col > 1){
+    moveNeighborCell(empty.row, empty.col + 1);
+  } else if (event.code == "ArrowRight" && empty.col > 1){
     // console.log("ArrowRight");
-    const targetRow = empty.row;
-    const targetCol = empty.col - 1;
-    moveNeighborCell(targetRow, targetCol);
+    moveNeighborCell(empty.row, empty.col - 1);
   }
 
   isWin();
@@ -214,7 +200,7 @@ document.body.addEventListener("keydown", keyMove);
 
 mixBtn.addEventListener("click", () => {
   for (let i = 0; i <= 200; i++) {
-    rotate();
+    mixCells();
   }
   winField.innerText = '';
   mixed = true;
